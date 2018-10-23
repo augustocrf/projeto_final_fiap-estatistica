@@ -1,0 +1,347 @@
+---
+title: "Trabalho final da disciplina"
+author: "Grupo2IA"
+date: "November 30, 2018"
+subtitle: "CONCEITOS ESTATISCOS PARA IA"
+institute: "FIAP - Profa. ADELAIDE ALVES DE OLIVEIRA"
+---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      error = FALSE, 
+                      warning = FALSE, 
+                      fig.width = 12, 
+                      fig.height = 8)
+```
+
+```{r packages}
+# Carregue aqui todos os pacotes utilizados 
+# na sua análise realizada neste arquivo fonte.
+
+# Note que o parâmetro "echo" foi definido como FALSE neste código.
+# Isso previne que o código apresente resultados formatados em HTML.
+# Você deve definir  para todos os blocos de código no seu arquivo.
+require(readr)
+
+library(ggplot2)
+library(GGally)
+library(grid)
+library(gtable)
+library(gridExtra)
+library(corrgram)
+library(dplyr)
+library(psych)
+library(scales)
+library(memisc)
+
+library(rpart) #for trees
+library(rpart.plot) 
+
+library(gmodels)
+```
+
+#### Introdução
+
+Análise "Análise de Vinho baseado em um Dataset fornecido" 
+===========================================
+
+> Alunos:
+
+Nome                            | RM
+------------------------------  | --------------------
+Augusto Cesar Ribeiro Freire    | 330695
+Marcelo Muzilli                 | 331136
+Rafael da Silva Tomaz           | 330267
+Renato Tavares da Silva         | 330659
+---
+
+```{r Load_the_Data}
+# Carregamento dos dados
+red_wine_quality <- read.csv2('data/winequality-red.csv')
+white_wine_quality <- read.csv2('data/winequality-white.csv')
+```
+
+Utilizando a base de vinhos (documento anexado) e disponibilizada em aula o objetivo do trabalho é mensurar a variável “Quality” dos vinhos desta região de Portugal com as variáveis de características (composição) dos vinhos.
+
+Algumas etapas importantes:
+1.	Base
+Reconhecimento da Base: Um descritivo do tamanho da base, quantidade de variáveis, formatos, e alguns descritivos (“achados”) sobre a base/variáveis.
+
+```{r Reconhecimento_da_Base_Vinho_Tinto_1}
+# tamanho da base
+dim(red_wine_quality)
+```
+
+```{r Reconhecimento_da_Base_Vinho_Tinto_2}
+# quantidade e formatos de variáveis
+str(red_wine_quality)
+```
+
+```{r Reconhecimento_da_Base_Vinho_Tinto_3}
+# Descritivos
+summary(red_wine_quality)
+```
+##### Observações do Resumo - Vinho Tinto
+
+- O conjunto de dados possui 1599 observações com 13 colunas/atributos, sendo 1 atributo X sendo o 
+índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
+escore de qualidade dado por especialistas de vinho.
+- Existe uma grande variedade de dioxido de enxofre (livre e total) nas amostras.
+- O teor alcólico varia de 8.40 a 14.90, com uma mediana de 10.20, para as amostras no conjunto de dados.
+- A qualidade das amostras varia de 3 a 8, sendo 6 a mediana.
+- A faixa de acidez fixa é bastante alta, com um mínimo de 4.60 e um máximo de 15.90
+- O valor do pH varia de 2.740 a 4.010, com uma mediana de 3.310.
+- Menos de 9% das observações não possuem ácido citrico
+- Cerca de 75% dos vinho possuem o açucar residual inferior a 2.7
+
+```{r Reconhecimento_da_Base_Vinho_Branco}
+# tamanho da base
+dim(white_wine_quality)
+```
+
+```{r Reconhecimento_da_Base_Vinho_Branco_2}
+
+# quantidade e formatos de variáveis
+str(white_wine_quality)
+```
+
+```{r Reconhecimento_da_Base_Vinho_Branco_3}
+# Descritivos
+summary(white_wine_quality)
+
+```
+##### Observações do Resumo - Vinho Branco
+
+- O conjunto de dados possui 1599 observações com 13 colunas/atributos, sendo 1 atributo X sendo o 
+índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
+escore de qualidade dado por especialistas de vinho.
+- Existe uma grande variedade de dioxido de enxofre (livre e total) nas amostras.
+- O teor alcólico varia de 8.40 a 14.90, com uma mediana de 10.20, para as amostras no conjunto de dados.
+- A qualidade das amostras varia de 3 a 8, sendo 6 a mediana.
+- A faixa de acidez fixa é bastante alta, com um mínimo de 4.60 e um máximo de 15.90
+- O valor do pH varia de 2.740 a 4.010, com uma mediana de 3.310.
+- Menos de 9% das observações não possuem ácido citrico
+- Cerca de 75% dos vinho possuem o açucar residual inferior a 2.7
+
+---
+
+Análise exploratória de dados: Detecção de outliers, gráficos e análise sobre os dois tipos de vinhos. Correlações entre elas (numéricas e gráficos).
+
+```{r global_new_variables}
+
+red_wine_quality <-
+  red_wine_quality %>%
+    mutate(
+      fixed.acidity = as.numeric(fixed.acidity),
+      volatile.acidity = as.numeric(volatile.acidity),
+      citric.acid = as.numeric(citric.acid),
+      residual.sugar = as.numeric(residual.sugar),
+      chlorides = as.numeric(chlorides),
+      free.sulfur.dioxide = as.numeric(free.sulfur.dioxide),
+      total.sulfur.dioxide = as.numeric(total.sulfur.dioxide),
+      density = as.numeric(density),
+      pH = as.numeric(pH),
+      sulphates = as.numeric(sulphates),
+      alcohol = as.numeric(alcohol)
+    )
+
+white_wine_quality <-
+  white_wine_quality %>%
+    mutate(
+      fixed.acidity = as.numeric(fixed.acidity),
+      volatile.acidity = as.numeric(volatile.acidity),
+      citric.acid = as.numeric(citric.acid),
+      residual.sugar = as.numeric(residual.sugar),
+      chlorides = as.numeric(chlorides),
+      free.sulfur.dioxide = as.numeric(free.sulfur.dioxide),
+      total.sulfur.dioxide = as.numeric(total.sulfur.dioxide),
+      density = as.numeric(density),
+      pH = as.numeric(pH),
+      sulphates = as.numeric(sulphates),
+      alcohol = as.numeric(alcohol)
+    )
+
+
+red_wine_quality['tipo.vinho'] <- 'vermelho'
+white_wine_quality['tipo.vinho']<- 'branco'
+
+wine_quality <- merge(red_wine_quality, white_wine_quality, all = TRUE)
+
+# Labels para auxiliar na leitura dos gráficos e entendimento do item analisado
+labels_graphs_variables <- c(
+  "Acidez Fixa (ácido tartárico - g/dm^3)",
+  "Acidez Volátil (ácido acético - g/dm^3)",
+  "Ácido Cítrico (g/dm^3)",
+  "Açucar Residual (g/dm^3)",
+  "Cloretos (cloreto de sódio - g/dm^3)",
+  "Dióxido de Enxofre livre (mg/dm^3)",
+  "Dióxido de Enxofre total (mg/dm^3)",
+  "Densidade (g/cm^3)",
+  "pH (escala de 0 (muito ácida) a 14 (muito básica))",
+  "Sulfatos (Sulfato de potássio - g/dm3)",
+  "Álcool (% por volume)",
+  "Qualidade (Entre 0 (muito ruim) e 10 (muito bom))",
+  "Total de Acidez (g/dm^3)" 
+)
+
+# label default para graficos para definir quantidade de registros para nao para 
+# otimizar memoria com string
+
+lbl_qtd_registros <- "Quantidade de registros"
+lbl_qualidade_cls <- "Qualidade (Bom/Ruim)"
+
+# associar as labels aos nomes das colunas
+names(labels_graphs_variables) <- colnames(wine_quality)
+```
+
+```{r Funcao_outlier}
+check_limits_outlier <- function(coluna){
+  AIQ <- quantile(coluna, .75, type=4)-quantile(coluna, .25, type=2) 
+  limite_inferior <- quantile(coluna, .25, type=2) - 1.5 * AIQ
+  limite_superior <- quantile(coluna, .75, type=4) + 1.5 * AIQ
+  
+  return (c(limite_inferior, limite_superior))
+}
+
+validate_outlier <- function(coluna, limits){
+  #verifica se o valor esta abaixo do valor limite inferior ou superior de outlier
+  return (coluna < limits[1] | coluna > limits[2])
+}
+
+```
+
+```{r Analise_exploratoria_de_dados_Tinto_1 message=FALSE, warning=FALSE}
+attach(red_wine_quality)
+
+outl_limit_fixed.acidity <- check_limits_outlier(fixed.acidity)
+outl_limit_volatile.acidity <- check_limits_outlier(volatile.acidity)
+outl_limit_citric.acid <- check_limits_outlier(citric.acid)
+outl_limit_residual.sugar <- check_limits_outlier(residual.sugar)
+outl_limit_chlorides <- check_limits_outlier(chlorides)
+outl_limit_free.sulfur.dioxide <- check_limits_outlier(free.sulfur.dioxide)
+outl_limit_total.sulfur.dioxide <- check_limits_outlier(total.sulfur.dioxide)
+outl_limit_density <- check_limits_outlier(density)
+outl_limit_pH <- check_limits_outlier(pH)
+outl_limit_sulphates <- check_limits_outlier(sulphates)
+outl_limit_alcohol <- check_limits_outlier(alcohol)
+
+red_wine_quality <-
+  red_wine_quality %>% 
+      mutate (
+              outl_fixed.acidity = if_else(validate_outlier(fixed.acidity,outl_limit_fixed.acidity), 1, 0),
+              outl_volatile.acidity = if_else(validate_outlier(volatile.acidity, outl_limit_volatile.acidity ), 1, 0),
+              outl_citric.acid = if_else(validate_outlier(citric.acid, outl_limit_citric.acid ), 1, 0),
+              outl_residual.sugar = if_else(validate_outlier(residual.sugar, outl_limit_residual.sugar ), 1, 0),
+              outl_chlorides = if_else(validate_outlier(chlorides, outl_limit_chlorides ), 1, 0),
+              outl_free.sulfur.dioxide = if_else(validate_outlier(free.sulfur.dioxide, outl_limit_free.sulfur.dioxide ), 1, 0),
+              outl_total.sulfur.dioxide = if_else(validate_outlier(total.sulfur.dioxide, outl_limit_total.sulfur.dioxide ), 1, 0),
+              outl_density = if_else(validate_outlier(density, outl_limit_density ), 1, 0),
+              outl_pH = if_else(validate_outlier(pH, outl_limit_pH ), 1, 0),
+              outl_sulphates = if_else(validate_outlier(sulphates, outl_limit_sulphates ), 1, 0),
+              outl_alcohol = if_else(validate_outlier(alcohol, outl_limit_alcohol ), 1, 0)
+              )
+```
+
+```{r Analise_exploratoria_de_dados_Branco_1 message=FALSE, warning=FALSE}
+attach(white_wine_quality)
+
+outl_limit_fixed.acidity <- check_limits_outlier(fixed.acidity)
+outl_limit_volatile.acidity <- check_limits_outlier(volatile.acidity)
+outl_limit_citric.acid <- check_limits_outlier(citric.acid)
+outl_limit_residual.sugar <- check_limits_outlier(residual.sugar)
+outl_limit_chlorides <- check_limits_outlier(chlorides)
+outl_limit_free.sulfur.dioxide <- check_limits_outlier(free.sulfur.dioxide)
+outl_limit_total.sulfur.dioxide <- check_limits_outlier(total.sulfur.dioxide)
+outl_limit_density <- check_limits_outlier(density)
+outl_limit_pH <- check_limits_outlier(pH)
+outl_limit_sulphates <- check_limits_outlier(sulphates)
+outl_limit_alcohol <- check_limits_outlier(alcohol)
+
+white_wine_quality <-
+  white_wine_quality %>% 
+      mutate (
+              outl_fixed.acidity = if_else(validate_outlier(fixed.acidity,outl_limit_fixed.acidity), 1, 0),
+              outl_volatile.acidity = if_else(validate_outlier(volatile.acidity, outl_limit_volatile.acidity ), 1, 0),
+              outl_citric.acid = if_else(validate_outlier(citric.acid, outl_limit_citric.acid ), 1, 0),
+              outl_residual.sugar = if_else(validate_outlier(residual.sugar, outl_limit_residual.sugar ), 1, 0),
+              outl_chlorides = if_else(validate_outlier(chlorides, outl_limit_chlorides ), 1, 0),
+              outl_free.sulfur.dioxide = if_else(validate_outlier(free.sulfur.dioxide, outl_limit_free.sulfur.dioxide ), 1, 0),
+              outl_total.sulfur.dioxide = if_else(validate_outlier(total.sulfur.dioxide, outl_limit_total.sulfur.dioxide ), 1, 0),
+              outl_density = if_else(validate_outlier(density, outl_limit_density ), 1, 0),
+              outl_pH = if_else(validate_outlier(pH, outl_limit_pH ), 1, 0),
+              outl_sulphates = if_else(validate_outlier(sulphates, outl_limit_sulphates ), 1, 0),
+              outl_alcohol = if_else(validate_outlier(alcohol, outl_limit_alcohol ), 1, 0)
+              )
+```
+
+```{r Analise_exploratoria_de_dados_2} 
+# Gráficos e análise sobre os dois tipos de vinhos
+
+
+# Correlações entre elas (numéricas e gráficos)
+
+
+
+```
+
+Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
+	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
+
+```{r Avaliacao_da_analise_no_tipo_de_vinho}
+
+# Detecção de outliers
+
+
+# Gráficos e análise sobre os dois tipos de vinhos
+
+
+# Correlações entre elas (numéricas e gráficos)
+
+
+```
+
+2.	 Algoritmos para explicar a variável “Quality” 
+o	Modelo1: Regressão Linear
+o	Modelo 2:  Árvore de Regressão
+o	Modelo 3:  Árvore de Decisão 
+o	Modelo 4:  Regressão Logística 
+o	Para cada modelo fazer as análises adequadas como: 
+	explicar a técnica
+	qual a variável dependente, 
+	quais são as variáveis independentes,
+	relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
+	saída do modelo (análise)
+	qualidade do modelo
+	O que cada modelo gerou de resultados?
+
+```{r Algoritmos_para_explicar_a_variavel_Quality}
+# Modelo 1: Regressão Linear
+
+# Modelo 2: Árvore de Regressão
+
+# Modelo 3: Árvore de Decisão 
+
+# Modelo 4: Regressão Logística
+
+
+```
+
+3.	Comparação entre os modelos:
+Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/ técnica que vocês recomendariam
+
+```{r Comparação_entre_os_modelos}
+# Resumo sobre a qualidade dos modelos
+
+# Recomendação: Modelo/Técnica
+
+```
+4.	Nesta atividade usamos somente algumas técnicas supervisionadas, 
+a)	quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?  
+b)	 e, das técnicas Não Supervisionadas, quais?
+```{r Outras_Tecnicas_Recomendadas}
+# quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?
+
+# técnicas Não Supervisionadas, quais?
+
+```
