@@ -24,21 +24,42 @@ knitr::opts_chunk$set(echo = FALSE,
 # Você deve definir  para todos os blocos de código no seu arquivo.
 require(readr)
 
-library(ggplot2)
-library(GGally)
-library(grid)
-library(gtable)
-library(gridExtra)
-library(corrgram)
-library(dplyr)
-library(psych)
-library(scales)
-library(memisc)
+install_missing_packages <- function(needToBeFixed = FALSE,... ) {
+  # Instala pacotes caso necessario
+  if ( "ggplot2" %in% rownames(installed.packages()) == FALSE ) { install.packages("ggplot2", dependencies = TRUE) }  
+  if ( "grid" %in% rownames(installed.packages()) == FALSE ) { install.packages("grid", dependencies = TRUE) }
+  if ( "gridExtra" %in% rownames(installed.packages()) == FALSE ) { install.packages("gridExtra", dependencies = TRUE) }
+  if ( "dplyr" %in% rownames(installed.packages()) == FALSE ) { install.packages("dplyr", dependencies = TRUE) }
+  if ( "scales" %in% rownames(installed.packages()) == FALSE ) { install.packages('scales', dependencies = TRUE) }
+  if ( "GGally" %in% rownames(installed.packages()) == FALSE ) { install.packages("GGally", dependencies = TRUE) }
+  if ( "gtable" %in% rownames(installed.packages()) == FALSE ) { install.packages("gtable", dependencies = TRUE) }
+  if ( "corrgram" %in% rownames(installed.packages()) == FALSE ) { install.packages("corrgram", dependencies = TRUE) }
+  if ( "psych" %in% rownames(installed.packages()) == FALSE ) { install.packages("psych", dependencies = TRUE) }
+  if ( "memisc" %in% rownames(installed.packages()) == FALSE ) { install.packages("memisc", dependencies = TRUE) }
+  if ( "rpart" %in% rownames(installed.packages()) == FALSE ) { install.packages("rpart", dependencies = TRUE) }
+  if ( "gmodels" %in% rownames(installed.packages()) == FALSE ) { install.packages("gmodels", dependencies = TRUE) }
+  if ( "rpart.plot" %in% rownames(installed.packages()) == FALSE ) { install.packages("rpart.plot", dependencies = TRUE) }
+  
+}
 
+# Instala pacotes adicionais e pacotes necessários
+install_missing_packages()
+
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(scales)
+library(GGally)
+library(gtable)
+library(corrgram)
+library(psych)
+library(memisc)
 library(rpart) #for trees
 library(rpart.plot) 
-
 library(gmodels)
+
+
 ```
 
 #### Introdução
@@ -72,17 +93,15 @@ Reconhecimento da Base: Um descritivo do tamanho da base, quantidade de variáve
 # tamanho da base
 dim(red_wine_quality)
 ```
-
 ```{r Reconhecimento_da_Base_Vinho_Tinto_2}
 # quantidade e formatos de variáveis
 str(red_wine_quality)
 ```
-
 ```{r Reconhecimento_da_Base_Vinho_Tinto_3}
 # Descritivos
 summary(red_wine_quality)
 ```
-##### Observações do Resumo - Vinho Tinto
+##### Observações do Resumo - Vinho Tinto 
 
 - O conjunto de dados possui 1599 observações com 13 colunas/atributos, sendo 1 atributo X sendo o 
 índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
@@ -99,17 +118,14 @@ escore de qualidade dado por especialistas de vinho.
 # tamanho da base
 dim(white_wine_quality)
 ```
-
 ```{r Reconhecimento_da_Base_Vinho_Branco_2}
 
 # quantidade e formatos de variáveis
 str(white_wine_quality)
 ```
-
 ```{r Reconhecimento_da_Base_Vinho_Branco_3}
 # Descritivos
 summary(white_wine_quality)
-
 ```
 ##### Observações do Resumo - Vinho Branco
 
@@ -129,7 +145,7 @@ escore de qualidade dado por especialistas de vinho.
 Análise exploratória de dados: Detecção de outliers, gráficos e análise sobre os dois tipos de vinhos. Correlações entre elas (numéricas e gráficos).
 
 ```{r global_new_variables}
-
+# Vinho Tinto
 red_wine_quality <-
   red_wine_quality %>%
     mutate(
@@ -146,6 +162,7 @@ red_wine_quality <-
       alcohol = as.numeric(alcohol)
     )
 
+# Vinho Branco
 white_wine_quality <-
   white_wine_quality %>%
     mutate(
@@ -301,21 +318,26 @@ Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separ
 
 ```
 
-2.	 Algoritmos para explicar a variável “Quality” 
-o	Modelo1: Regressão Linear
-o	Modelo 2:  Árvore de Regressão
-o	Modelo 3:  Árvore de Decisão 
-o	Modelo 4:  Regressão Logística 
+2. Algoritmos para explicar a variável “Quality” 
+o	Modelo 1: Regressão Linear
+o	Modelo 2: Árvore de Regressão
+o	Modelo 3: Árvore de Decisão 
+o	Modelo 4: Regressão Logística 
 o	Para cada modelo fazer as análises adequadas como: 
-	explicar a técnica
-	qual a variável dependente, 
-	quais são as variáveis independentes,
-	relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
-	saída do modelo (análise)
-	qualidade do modelo
-	O que cada modelo gerou de resultados?
+ - explicar a técnica
+ - qual a variável dependente, 
+ - quais são as variáveis independentes,
+ - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
+ - saída do modelo (análise)
+ - qualidade do modelo
+
+O que cada modelo gerou de resultados?
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality}
+# Frequ?ncia absoluta 
+table(as.factor(red_wine_quality), red_wine_quality, useNA = "ifany")
+table(as.factor(red_wine_quality), red_wine_quality)
+
 # Modelo 1: Regressão Linear
 
 # Modelo 2: Árvore de Regressão
@@ -327,7 +349,7 @@ o	Para cada modelo fazer as análises adequadas como:
 
 ```
 
-3.	Comparação entre os modelos:
+3. Comparação entre os modelos:
 Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/ técnica que vocês recomendariam
 
 ```{r Comparação_entre_os_modelos}
@@ -336,9 +358,9 @@ Utilizando as métricas adequadas para comparação de modelos façam um resumo 
 # Recomendação: Modelo/Técnica
 
 ```
-4.	Nesta atividade usamos somente algumas técnicas supervisionadas, 
-a)	quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?  
-b)	 e, das técnicas Não Supervisionadas, quais?
+4. Nesta atividade usamos somente algumas técnicas supervisionadas, 
+a) quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?  
+b) e, das técnicas Não Supervisionadas, quais?
 ```{r Outras_Tecnicas_Recomendadas}
 # quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?
 
