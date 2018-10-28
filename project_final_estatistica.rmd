@@ -294,11 +294,33 @@ white_wine_quality <-
 
 ```{r Analise_exploratoria_de_dados_2} 
 # Gráficos e análise sobre os dois tipos de vinhos
+attach(white_wine_quality)
 
+boxplot(quality ~ tipo.vinho, main='quality')
+
+par (mfrow=c(3,4))
+boxplot(fixed.acidity ~ tipo.vinho, main='fixedacidity',col=c('red','blue'))
+boxplot(volatile.acidity ~ tipo.vinho , main='volatileacidity',col=c('red','blue'))
+boxplot(citric.acid ~ tipo.vinho, main='citricacid',col=c('red','blue'))
+boxplot(residual.sugar ~ tipo.vinho, main='residualsugar',col=c('red','blue'))
+boxplot(chlorides ~ tipo.vinho, main='chlorides',col=c('red','blue'))
+boxplot(free.sulfur.dioxide ~ tipo.vinho, main='freesulfurdioxide' ,col=c('red','blue'))
+boxplot(total.sulfur.dioxide ~ tipo.vinho, main='totalsulfurdioxide',col=c('red','blue'))
+boxplot(density ~ tipo.vinho, main='density',col=c('red','blue'))
+boxplot(pH ~ tipo.vinho, main='pH',col=c('red','blue'))
+boxplot(sulphates ~ tipo.vinho, main='sulphates',col=c('red','blue'))
+boxplot(alcohol ~ tipo.vinho, main='alcohol',col=c('red','blue'))
+
+par (mfrow=c(1,1))
 
 # Correlações entre elas (numéricas e gráficos)
 
+plot(free.sulfur.dioxide~total.sulfur.dioxide)
+plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
 
+plot(free.sulfur.dioxide~total.sulfur.dioxide)
+abline(v=mean(free.sulfur.dioxide), col="red")
+abline(h=mean(total.sulfur.dioxide), col="green")
 
 ```
 
@@ -308,12 +330,37 @@ Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separ
 ```{r Avaliacao_da_analise_no_tipo_de_vinho}
 
 # Detecção de outliers
+attach(white_wine_quality)
 
+par (mfrow=c(3,4))
+hist(fixed.acidity)
+hist(volatile.acidity)
+hist(citric.acid)
+hist(residual.sugar)
+hist(chlorides)
+hist(free.sulfur.dioxide)
+hist(total.sulfur.dioxide)
+hist(density)
+hist(pH)
+hist(sulphates)
+hist(alcohol)
+hist(quality)
+
+par (mfrow=c(1,1))
 
 # Gráficos e análise sobre os dois tipos de vinhos
 
 
 # Correlações entre elas (numéricas e gráficos)
+white_wine_quality_corr <- subset(white_wine_quality, select=c(quality,fixed.acidity,volatile.acidity,citric.acid,residual.sugar,
+        chlorides,free.sulfur.dioxide,total.sulfur.dioxide,density,pH,
+                                                 sulphates,alcohol))
+
+winematCor <- round(cor(white_wine_quality_corr),3)
+print(winematCor)
+
+library(corrgram)
+corrgram(winematCor, type = "cor", lower.panel = panel.shade, upper.panel = panel.pie)
 
 
 ```
