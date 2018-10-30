@@ -332,8 +332,6 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 ```
 
 ```{r Correlacao Entre Elas - Vinho Branco}
-# Correlações entre elas (numéricas e gráficos)
-
 # Dataset de vinho
 attach(white_wine_quality)
 
@@ -383,9 +381,6 @@ hist(quality)
 
 par (mfrow=c(1,1))
 
-# Gráficos e análise sobre os dois tipos de vinhos
-
-
 # Correlações entre elas (numéricas e gráficos)
 white_wine_quality_corr <- subset(white_wine_quality, select=c(quality,fixed.acidity,volatile.acidity,citric.acid,residual.sugar,
         chlorides,free.sulfur.dioxide,total.sulfur.dioxide,density,pH,
@@ -394,7 +389,6 @@ white_wine_quality_corr <- subset(white_wine_quality, select=c(quality,fixed.aci
 winematCor <- round(cor(white_wine_quality_corr),3)
 print(winematCor)
 
-#library(corrgram)
 corrgram(winematCor, type = "cor", lower.panel = panel.shade, upper.panel = panel.pie)
 
 ```
@@ -405,7 +399,6 @@ O que cada modelo gerou de resultados?
 ```{r Algoritmos_para_explicar_a_variavel_Quality}
 attach(white_wine_quality)
 
-# Frequ?ncia absoluta 
 table(as.factor(wine_quality$quality),wine_quality$tipo.vinho, useNA = "ifany")
 table(as.factor(wine_quality$quality),wine_quality$tipo.vinho)
 ```
@@ -434,7 +427,16 @@ plot(predict(modelo_rl), rs_lr, xlab = "Preditor linear",ylab = "Residuos")
 abline(h = 0, lty = 2)
 ```
 
-o	Modelo 1: Regressão Linear
+> Modelo de *Regressão Linear*: 
+
+Regressão linear é uma equação para se estimar a condicional (valor esperado) de uma variável y, dados os valores de algumas outras variáveis x. A regressão, em geral, tem como objectivo tratar de um valor que não se consegue estimar inicialmente.
+
+A regressão linear é chamada "linear" porque se considera que a relação da resposta às variáveis é uma função linear de alguns parâmetros. Os modelos de regressão que não são uma função linear dos parâmetros se chamam modelos de regressão não-linear. Sendo uma das primeiras formas de análise regressiva a ser estudada rigorosamente, e usada extensamente em aplicações práticas. Isso acontece porque modelos que dependem de forma linear dos seus parâmetros desconhecidos, são mais fáceis de ajustar que os modelos não-lineares aos seus parâmetros, e porque as propriedades estatísticas dos estimadores resultantes são fáceis de determinar.
+
+Modelos de regressão linear são frequentemente ajustados usando a abordagem dos mínimos quadrados, mas que também pode ser montada de outras maneiras, tal como minimizando a "falta de ajuste" em alguma outra norma (com menos desvios absolutos de regressão), ou através da minimização de uma penalização da versão dos mínimos quadrados. Por outro lado, a abordagem de mínimos quadrados pode ser utilizado para ajustar a modelos que não são modelos lineares. Assim, embora os termos "mínimos quadrados" e "modelo linear" estejam intimamente ligados, eles não são sinônimos.
+ 
+* Variável dependente: **Qualidade do Vinho (quality)**
+* Variáveis independentes: **Valores de Álcool (alcohol)** e **pH (pH)** do vinho
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Regressao}
 # Modelo 2: Árvore de Regressão
@@ -461,14 +463,14 @@ rs <- Valor_predito_AR - quality
 plot(predict(modelo_AR), rs, xlab = "Com Árvore de Regressão",ylab = "Residuos")
 abline(h = 0, lty = 2)
 ```
-o	Modelo 2: Árvore de Regressão
- - explicar a técnica
- - qual a variável dependente, 
- - quais são as variáveis independentes,
- - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
- - saída do modelo (análise)
- - qualidade do modelo
 
+> Modelo de *Árvore de Regressão*: 
+
+Uma árvore de regressão é idêntica a uma árvore de decisão porque também é formada por um conjunto de nós de decisão, perguntas, mas o resultado, em vez de uma categoria, é um escalar (número que pertence a uma escala).
+
+As árvores de regressão são usadas quando a variável dependente é contínua. As árvores de classificação são usadas quando a variável dependente é categórica.
+
+Neste tipo de árvore para análise o valor obtido pelos nós de término nos dados de treinamento é o valor médio das suas observações. Assim, a uma nova observação de dados atribui-se o valor médio correspondente.
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Decisao}
 # Modelo 3: Árvore de Decisão 
@@ -514,14 +516,11 @@ fancyRpartPlot(modelo_AD, cex=0.70)
 fancyRpartPlot(modelo_AD, cex=0.70,  palettes=c("Greys", "Oranges"))
 ```
 
-o	Modelo 3: Árvore de Decisão 
- - explicar a técnica
- - qual a variável dependente, 
- - quais são as variáveis independentes,
- - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
- - saída do modelo (análise)
- - qualidade do modelo
+> Modelo de *Árvore de Decisão*: 
 
+Um modelo de aprendizagem de árvore de decisão é uma classe de métodos estatísticos que prevê uma variável de meta usando uma ou mais variáveis que tenham influência na variável de meta e que, muitas vezes, são chamadas de variáveis de previsão. A previsão é feita pela criação de um conjunto de regras de divisão de "inclusão-implicação" que otimizam um critério. Os critérios usados para formar essas regras dependem da natureza da variável de meta. Se a variável de meta identificar a associação em um conjunto de categorias, uma árvore de classificação será criada com base na maximização da "pureza" em cada divisão baseada no coeficiente Gini ou em um índice de informações baseado em entropia. Se a variável de meta for uma variável contínua, uma árvore de regressão será criada usando os critérios de divisão para minimizar a soma dos erros ao quadrado em cada divisão. 
+
+* Variável dependente: **Alcool (alcohol)**
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality Regressao Logistica}
 # Modelo 4: Regressão Logística
@@ -560,35 +559,63 @@ prop.table(table(fx_predito1, quality),2)
 plot(fx_predito1, quality)
 
 ```
-o	Modelo 4: Regressão Logística 
- - explicar a técnica
- - qual a variável dependente, 
- - quais são as variáveis independentes,
- - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
- - saída do modelo (análise)
- - qualidade do modelo
 
-----
-3. Comparação entre os modelos:
+> Modelo 4: *Regressão Logística*:
+
+A regressão logística é uma técnica estatística que tem como objetivo produzir, a partir de um conjunto de observações, um modelo que permita a predição de valores tomados por uma variável categórica, frequentemente binária, a partir de uma série de variáveis explicativas contínuas e/ou binárias.
+
+O êxito da regressão logística assenta sobretudo nas numerosas ferramentas que permitem interpretar de modo aprofundado os resultados obtidos.
+
+Em comparação com as técnicas conhecidas em regressão, em especial a regressão linear, a regressão logística distingue-se essencialmente pelo facto de a variável resposta ser categórica.
+
+Enquanto método de predição para variáveis categóricas, a regressão logística é comparável às técnicas supervisionadas propostas em aprendizagem automática (árvores de decisão, redes neurais, etc.), ou ainda a análise discriminante preditiva em estatística exploratória. É possível de as colocar em concorrência para escolha do modelo mais adaptado para um certo problema preditivo a resolver.
+
+A regressão logística é amplamente usada em ciências médicas e sociais, e tem outras denominações, como modelo logístico, modelo logit, e classificador de máxima entropia.
+
+
+> Comparação entre os modelos:
+
 Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/técnica que vocês recomendariam
 
 ```{r Resumo_Sobre_Qualidade_Modelo}
 # Resumo sobre a qualidade dos modelos
 ```
 
+> Resumo das técnicas utilizadas
+
+A escolha da técnica estatística pode não ser lá a decisão mais crucial para que um modelo preditivo seja bom, mas saber escolher entre uma técnica e outra pode trazer ganhos expressivos e até ser determinantes no sucesso das previsões. Cada técnica apresenta benefícios e limitações diferentes. 
+
+Neste trabalho utilizamos os seguintes métodos:
+1. Regressão Linear
+2. Árvore de Decisão
+3. Árvore de Regressão
+4. Regressão Logística
+
+Das técnicas utilizadas, a que pudemos classificar melhor a análise foi a **árvore de Decisão**, justamente pela sua fácil interpretação.
+
 ```{r Recomendacao_Tecnica}
 # Recomendação: Modelo/Técnica
 
 ```
 
+> Recomendação
+
+O Modelo de Árvore de deisão nos permitiu obter melhor o resultado do Vinho de Boa qualidade com um teor alcóolico não muito alto. Bom para ser apreciado.
+
+----
 4. Nesta atividade usamos somente algumas técnicas supervisionadas, 
 a) quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?  
 b) e, das técnicas Não Supervisionadas, quais?
 ```{r Outras_Tecnicas_Recomendadas}
 # quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?
 ``` 
+O modelo de **Clusterização** seria uma ótima abordagem.
 
 ```{r Tecnicas_Nao_Supervisionadas}
 # técnicas Não Supervisionadas, quais?
 
 ```
+A Aprendizagem não supervisionada, por outro lado, nos permite abordar problemas com pouca ou nenhuma idéia do que nossos resultados deve ser aparentar. Podemos derivar estrutura de dados onde nós não necessariamente saberiamos o efeito das variáveis. 
+Podemos derivar essa estrutura, agrupando os dados com base em relações entre as variáveis nos dados. Também pode ser usada para reduzir o número de dimensões em um conjunto de dados para concentrar somente nos atributos mais úteis, ou para detectar tendências.
+Com aprendizagem não supervisionada não há feedback com base nos resultados da previsão.
+
