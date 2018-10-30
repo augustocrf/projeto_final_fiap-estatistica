@@ -132,12 +132,10 @@ summary(white_wine_quality)
 índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
 escore de qualidade dado por especialistas de vinho.
 - Existe uma grande variedade de dioxido de enxofre (livre e total) nas amostras.
-- O teor alcólico varia de 8.40 a 14.90, com uma mediana de 10.20, para as amostras no conjunto de dados.
-- A qualidade das amostras varia de 3 a 8, sendo 6 a mediana.
-- A faixa de acidez fixa é bastante alta, com um mínimo de 4.60 e um máximo de 15.90
-- O valor do pH varia de 2.740 a 4.010, com uma mediana de 3.310.
-- Menos de 9% das observações não possuem ácido citrico
-- Cerca de 75% dos vinho possuem o açucar residual inferior a 2.7
+- O teor alcólico varia de 9.40 a 10.50, com uma mediana de 9.20, para as amostras no conjunto de dados.
+- A qualidade das amostras varia de 3 a 9, sendo 6 a mediana.
+- A faixa de acidez fixa varia com um mínimo de 6.80 e um máximo de 7
+- O valor do pH varia de 3.14 a 3.2, com uma mediana de 3.22.
 
 ---
 
@@ -226,7 +224,8 @@ validate_outlier <- function(coluna, limits){
 }
 
 ```
-```{r Analise_exploratoria_de_dados_Tinto_1 message=FALSE, warning=FALSE}
+
+```{r Analise_exploratoria_de_dados_Tinto_1}
 attach(red_wine_quality)
 
 outl_limit_fixed.acidity <- check_limits_outlier(fixed.acidity)
@@ -258,7 +257,7 @@ red_wine_quality <-
               )
 ```
 
-```{r Analise_exploratoria_de_dados_Branco_1 message=FALSE, warning=FALSE}
+```{r Analise_exploratoria_de_dados_Branco_1}
 attach(white_wine_quality)
 
 
@@ -291,7 +290,7 @@ white_wine_quality <-
               )
 ```
 
-```{r Analise_exploratoria_de_dados_2 message=FALSE, warning=FALSE} 
+```{r Analise_exploratoria_de_dados_2}
 # Gráficos e análise sobre os dois tipos de vinhos
 
 # Dataset de vinho
@@ -316,7 +315,7 @@ par (mfrow=c(1,1))
 
 ```
 
-```{r Correlacao Entre Elas - Vinho Tinto message=FALSE, warning=FALSE} 
+```{r Correlacao Entre Elas - Vinho Tinto}
 
 # Detecção de outliers
 attach(red_wine_quality)
@@ -332,7 +331,7 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 
 ```
 
-```{r Correlacao Entre Elas - Vinho Branco message=FALSE, warning=FALSE} 
+```{r Correlacao Entre Elas - Vinho Branco}
 # Correlações entre elas (numéricas e gráficos)
 
 # Dataset de vinho
@@ -348,13 +347,13 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 ```
 
 
-```{r Deteccao de outliers - Vinho Tinto message=FALSE, warning=FALSE} 
+```{r Deteccao de outliers - Vinho Tinto}
 # Detecção de outliers
 attach(red_wine_quality)
 
 ```
 
-```{r Deteccao de outliers - Vinho Branco message=FALSE, warning=FALSE} 
+```{r Deteccao de outliers - Vinho Branco}
 # Detecção de outliers
 attach(white_wine_quality)
 
@@ -362,7 +361,7 @@ attach(white_wine_quality)
 Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
 	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
 
-```{r Avaliacao da Analise e Correlacao message=FALSE, warning=FALSE} 
+```{r Avaliacao da Analise e Correlacao}
 
 attach(white_wine_quality)
 
@@ -401,26 +400,9 @@ corrgram(winematCor, type = "cor", lower.panel = panel.shade, upper.panel = pane
 ```
 
 2. Algoritmos para explicar a variável “Quality” 
-o	Modelo 1: Regressão Linear
-o	Modelo 2: Árvore de Regressão
-o	Modelo 3: Árvore de Decisão 
-o	Modelo 4: Regressão Logística 
-o	Para cada modelo fazer as análises adequadas como: 
- - explicar a técnica
- - qual a variável dependente, 
- - quais são as variáveis independentes,
- - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
- - saída do modelo (análise)
- - qualidade do modelo
-
 O que cada modelo gerou de resultados?
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality}
-
-# Modelo final.
-#modelo_fim <- lm(Valor ~ ?rea+IA+Andar+Su?tes+DistBM+Semru?do+Vista)
-#summary(modelo_fim)
-
 attach(white_wine_quality)
 
 # Frequ?ncia absoluta 
@@ -434,7 +416,6 @@ modelo_rl <- lm(quality ~ alcohol+pH)
 summary(modelo_rl)
 
 valor_predito_rl <- predict(modelo_rl,interval = "prediction", level = 0.95) 
-fix(valor_predito_rl)
 
 # intervalo de confianca - grafico para media
 fit_lr <- valor_predito_rl[,1] # valores preditos
@@ -452,6 +433,8 @@ rs_lr <- resid(modelo_rl)
 plot(predict(modelo_rl), rs_lr, xlab = "Preditor linear",ylab = "Residuos")
 abline(h = 0, lty = 2)
 ```
+
+o	Modelo 1: Regressão Linear
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Regressao}
 # Modelo 2: Árvore de Regressão
@@ -478,6 +461,14 @@ rs <- Valor_predito_AR - quality
 plot(predict(modelo_AR), rs, xlab = "Com Árvore de Regressão",ylab = "Residuos")
 abline(h = 0, lty = 2)
 ```
+o	Modelo 2: Árvore de Regressão
+ - explicar a técnica
+ - qual a variável dependente, 
+ - quais são as variáveis independentes,
+ - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
+ - saída do modelo (análise)
+ - qualidade do modelo
+
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Decisao}
 # Modelo 3: Árvore de Decisão 
@@ -523,6 +514,15 @@ fancyRpartPlot(modelo_AD, cex=0.70)
 fancyRpartPlot(modelo_AD, cex=0.70,  palettes=c("Greys", "Oranges"))
 ```
 
+o	Modelo 3: Árvore de Decisão 
+ - explicar a técnica
+ - qual a variável dependente, 
+ - quais são as variáveis independentes,
+ - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
+ - saída do modelo (análise)
+ - qualidade do modelo
+
+
 ```{r Algoritmos_para_explicar_a_variavel_Quality Regressao Logistica}
 # Modelo 4: Regressão Logística
 modelo_log<- glm(quality ~ alcohol+pH, white_wine_quality, family = gaussian) #binomial(link=logit))
@@ -549,7 +549,7 @@ ACC = sum(diag(MC)) / sum(MC) # calcula a acuracia
 show(ACC) # mostra a acuracia  
 
 # Criar variavel faixa probabilidade
-fx_predito1 <- cut(predito, breaks=c(5,6,7), right=F)
+fx_predito1 <- cut(predito_log, breaks=c(5,6,7), right=F)
 
 # Frequencia absoluta
 table(fx_predito1,quality)
@@ -560,22 +560,35 @@ prop.table(table(fx_predito1, quality),2)
 plot(fx_predito1, quality)
 
 ```
+o	Modelo 4: Regressão Logística 
+ - explicar a técnica
+ - qual a variável dependente, 
+ - quais são as variáveis independentes,
+ - relações entre elas (numéricas e gráficos) (verificar se todas já foram efetuadas adequadamente na parte 1.
+ - saída do modelo (análise)
+ - qualidade do modelo
 
+----
 3. Comparação entre os modelos:
 Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/técnica que vocês recomendariam
 
-```{r Comparação_entre_os_modelos}
+```{r Resumo_Sobre_Qualidade_Modelo}
 # Resumo sobre a qualidade dos modelos
+```
 
+```{r Recomendacao_Tecnica}
 # Recomendação: Modelo/Técnica
 
 ```
+
 4. Nesta atividade usamos somente algumas técnicas supervisionadas, 
 a) quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?  
 b) e, das técnicas Não Supervisionadas, quais?
 ```{r Outras_Tecnicas_Recomendadas}
 # quais outras técnicas supervisionadas vocês indicariam como adequadas para esta análise?
+``` 
 
+```{r Tecnicas_Nao_Supervisionadas}
 # técnicas Não Supervisionadas, quais?
 
 ```
