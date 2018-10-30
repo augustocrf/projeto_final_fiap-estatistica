@@ -6,15 +6,6 @@ subtitle: "CONCEITOS ESTATISCOS PARA IA"
 institute: "FIAP - Profa. ADELAIDE ALVES DE OLIVEIRA"
 ---
 
-```{r global_options, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, 
-                      message = FALSE, 
-                      error = FALSE, 
-                      warning = FALSE, 
-                      fig.width = 12, 
-                      fig.height = 8)
-```
-
 ```{r packages}
 # Carregue aqui todos os pacotes utilizados 
 # na sua análise realizada neste arquivo fonte.
@@ -22,10 +13,11 @@ knitr::opts_chunk$set(echo = FALSE,
 # Note que o parâmetro "echo" foi definido como FALSE neste código.
 # Isso previne que o código apresente resultados formatados em HTML.
 # Você deve definir  para todos os blocos de código no seu arquivo.
-require(readr)
+#require(readr)
 
 install_missing_packages <- function(needToBeFixed = FALSE,... ) {
   # Instala pacotes caso necessario
+  if ( "knitr" %in% rownames(installed.packages()) == FALSE ) { install.packages("knitr", dependencies = TRUE) } 
   if ( "ggplot2" %in% rownames(installed.packages()) == FALSE ) { install.packages("ggplot2", dependencies = TRUE) }  
   if ( "grid" %in% rownames(installed.packages()) == FALSE ) { install.packages("grid", dependencies = TRUE) }
   if ( "gridExtra" %in% rownames(installed.packages()) == FALSE ) { install.packages("gridExtra", dependencies = TRUE) }
@@ -39,12 +31,13 @@ install_missing_packages <- function(needToBeFixed = FALSE,... ) {
   if ( "rpart" %in% rownames(installed.packages()) == FALSE ) { install.packages("rpart", dependencies = TRUE) }
   if ( "gmodels" %in% rownames(installed.packages()) == FALSE ) { install.packages("gmodels", dependencies = TRUE) }
   if ( "rpart.plot" %in% rownames(installed.packages()) == FALSE ) { install.packages("rpart.plot", dependencies = TRUE) }
-  
+  if ( "rattle" %in% rownames(installed.packages()) == FALSE ) { install.packages("rattle", dependencies = TRUE) }
 }
 
 # Instala pacotes adicionais e pacotes necessários
 install_missing_packages()
 
+library(knitr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
@@ -58,14 +51,24 @@ library(memisc)
 library(rpart) #for trees
 library(rpart.plot) 
 library(gmodels)
-
+library(rattle)
 
 ```
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      error = FALSE, 
+                      warning = FALSE, 
+                      fig.width = 12, 
+                      fig.height = 8)
+```
+
 
 #### Introdução
 
 Análise "Análise de Vinho baseado em um Dataset fornecido" 
-===========================================
+=========================================================
 
 > Alunos:
 
@@ -103,23 +106,19 @@ summary(red_wine_quality)
 ```
 ##### Observações do Resumo - Vinho Tinto 
 
-- O conjunto de dados possui 1599 observações com 13 colunas/atributos, sendo 1 atributo X sendo o 
-índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
-escore de qualidade dado por especialistas de vinho.
+- O conjunto de dados possui 1599 observações com 12 colunas/atributos, sendo 11 atributos físico-químicas 
+e uma variável de qualidade de saída medindo o score de qualidade dado por especialistas de vinho.
 - Existe uma grande variedade de dioxido de enxofre (livre e total) nas amostras.
-- O teor alcólico varia de 8.40 a 14.90, com uma mediana de 10.20, para as amostras no conjunto de dados.
+- O teor alcólico varia de 9.50 a 10.50, com uma mediana de 9.8, para as amostras no conjunto de dados.
 - A qualidade das amostras varia de 3 a 8, sendo 6 a mediana.
-- A faixa de acidez fixa é bastante alta, com um mínimo de 4.60 e um máximo de 15.90
-- O valor do pH varia de 2.740 a 4.010, com uma mediana de 3.310.
-- Menos de 9% das observações não possuem ácido citrico
-- Cerca de 75% dos vinho possuem o açucar residual inferior a 2.7
+- A faixa de acidez fixa é bastante alta, com um mínimo de 7.20 e um máximo de 7.70
+- O valor do pH varia de 3.30 a 3.29, com uma mediana de 3.26.
 
 ```{r Reconhecimento_da_Base_Vinho_Branco}
 # tamanho da base
 dim(white_wine_quality)
 ```
 ```{r Reconhecimento_da_Base_Vinho_Branco_2}
-
 # quantidade e formatos de variáveis
 str(white_wine_quality)
 ```
@@ -129,7 +128,7 @@ summary(white_wine_quality)
 ```
 ##### Observações do Resumo - Vinho Branco
 
-- O conjunto de dados possui 1599 observações com 13 colunas/atributos, sendo 1 atributo X sendo o 
+- O conjunto de dados possui 4898 observações com 11 colunas/atributos, sendo 1 atributo X sendo o 
 índice ou Id da amostra, 11 atributos físico-químicas e uma variável de qualidade de saída medindo o 
 escore de qualidade dado por especialistas de vinho.
 - Existe uma grande variedade de dioxido de enxofre (livre e total) nas amostras.
@@ -227,7 +226,6 @@ validate_outlier <- function(coluna, limits){
 }
 
 ```
-
 ```{r Analise_exploratoria_de_dados_Tinto_1 message=FALSE, warning=FALSE}
 attach(red_wine_quality)
 
@@ -263,6 +261,7 @@ red_wine_quality <-
 ```{r Analise_exploratoria_de_dados_Branco_1 message=FALSE, warning=FALSE}
 attach(white_wine_quality)
 
+
 outl_limit_fixed.acidity <- check_limits_outlier(fixed.acidity)
 outl_limit_volatile.acidity <- check_limits_outlier(volatile.acidity)
 outl_limit_citric.acid <- check_limits_outlier(citric.acid)
@@ -292,9 +291,11 @@ white_wine_quality <-
               )
 ```
 
-```{r Analise_exploratoria_de_dados_2} 
+```{r Analise_exploratoria_de_dados_2 message=FALSE, warning=FALSE} 
 # Gráficos e análise sobre os dois tipos de vinhos
-attach(white_wine_quality)
+
+# Dataset de vinho
+attach(wine_quality)
 
 boxplot(quality ~ tipo.vinho, main='quality')
 
@@ -313,6 +314,13 @@ boxplot(alcohol ~ tipo.vinho, main='alcohol',col=c('red','blue'))
 
 par (mfrow=c(1,1))
 
+```
+
+```{r Correlacao Entre Elas - Vinho Tinto message=FALSE, warning=FALSE} 
+
+# Detecção de outliers
+attach(red_wine_quality)
+
 # Correlações entre elas (numéricas e gráficos)
 
 plot(free.sulfur.dioxide~total.sulfur.dioxide)
@@ -324,15 +332,43 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 
 ```
 
-Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
-	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
+```{r Correlacao Entre Elas - Vinho Branco message=FALSE, warning=FALSE} 
+# Correlações entre elas (numéricas e gráficos)
 
-```{r Avaliacao_da_analise_no_tipo_de_vinho}
+# Dataset de vinho
+attach(white_wine_quality)
 
+plot(free.sulfur.dioxide~total.sulfur.dioxide)
+plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
+
+plot(free.sulfur.dioxide~total.sulfur.dioxide)
+abline(v=mean(free.sulfur.dioxide), col="red")
+abline(h=mean(total.sulfur.dioxide), col="green")
+
+```
+
+
+```{r Deteccao de outliers - Vinho Tinto message=FALSE, warning=FALSE} 
+# Detecção de outliers
+attach(red_wine_quality)
+
+```
+
+```{r Deteccao de outliers - Vinho Branco message=FALSE, warning=FALSE} 
 # Detecção de outliers
 attach(white_wine_quality)
 
+```
+Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
+	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
+
+```{r Avaliacao da Analise e Correlacao message=FALSE, warning=FALSE} 
+
+attach(white_wine_quality)
+
+# Avaliacao da Analise
 par (mfrow=c(3,4))
+
 hist(fixed.acidity)
 hist(volatile.acidity)
 hist(citric.acid)
@@ -359,9 +395,8 @@ white_wine_quality_corr <- subset(white_wine_quality, select=c(quality,fixed.aci
 winematCor <- round(cor(white_wine_quality_corr),3)
 print(winematCor)
 
-library(corrgram)
+#library(corrgram)
 corrgram(winematCor, type = "cor", lower.panel = panel.shade, upper.panel = panel.pie)
-
 
 ```
 
@@ -381,23 +416,153 @@ o	Para cada modelo fazer as análises adequadas como:
 O que cada modelo gerou de resultados?
 
 ```{r Algoritmos_para_explicar_a_variavel_Quality}
+
+# Modelo final.
+#modelo_fim <- lm(Valor ~ ?rea+IA+Andar+Su?tes+DistBM+Semru?do+Vista)
+#summary(modelo_fim)
+
+attach(white_wine_quality)
+
 # Frequ?ncia absoluta 
-table(as.factor(red_wine_quality), red_wine_quality, useNA = "ifany")
-table(as.factor(red_wine_quality), red_wine_quality)
-
+table(as.factor(wine_quality$quality),wine_quality$tipo.vinho, useNA = "ifany")
+table(as.factor(wine_quality$quality),wine_quality$tipo.vinho)
+```
+```{r Algoritmos_para_explicar_a_variavel_Quality Regressao Linear}
 # Modelo 1: Regressão Linear
+modelo_rl <- lm(quality ~ alcohol+pH)
 
+summary(modelo_rl)
+
+valor_predito_rl <- predict(modelo_rl,interval = "prediction", level = 0.95) 
+fix(valor_predito_rl)
+
+# intervalo de confianca - grafico para media
+fit_lr <- valor_predito_rl[,1] # valores preditos
+lower_lr <- valor_predito_rl[,2] # limite inferior
+upper_lr <- valor_predito_rl[,3] # limite superior
+
+mse_lr <- mean((quality - fit_lr)^2)
+sqrt(mse_lr)
+
+erro_usando_media_lr <- mean((quality - mean(quality))^2)
+sqrt(erro_usando_media_lr)
+
+# grafico residuo
+rs_lr <- resid(modelo_rl)
+plot(predict(modelo_rl), rs_lr, xlab = "Preditor linear",ylab = "Residuos")
+abline(h = 0, lty = 2)
+```
+
+```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Regressao}
 # Modelo 2: Árvore de Regressão
+attach(white_wine_quality)
 
+modelo_AR  <- rpart(quality ~ alcohol+pH, data=white_wine_quality, 
+                     cp = 0.001,minsplit = 5,maxdepth=10)
+
+rpart.plot(modelo_AR, type=4, extra=1, under=FALSE, clip.right.labs=TRUE,
+           fallen.leaves=FALSE,   digits=2, varlen=-10, faclen=20,
+           cex=0.4, tweak=1.7, compress=TRUE, snip=FALSE)
+
+Valor_predito_AR <- predict(modelo_AR,interval = "prediction", level = 0.95) 
+str(Valor_predito_AR)
+
+mse_AR <- mean((quality - Valor_predito_AR)^2)
+sqrt(mse_AR)
+
+erro_usando_media_AR <- mean((quality - mean(quality))^2)
+sqrt(erro_usando_media_AR)
+
+# grafico residuo
+rs <- Valor_predito_AR - quality
+plot(predict(modelo_AR), rs, xlab = "Com Árvore de Regressão",ylab = "Residuos")
+abline(h = 0, lty = 2)
+```
+
+```{r Algoritmos_para_explicar_a_variavel_Quality Arvore de Decisao}
 # Modelo 3: Árvore de Decisão 
 
-# Modelo 4: Regressão Logística
+modelo_AD <- rpart (quality ~ alcohol+pH, data=white_wine_quality, cp = 0.008,minsplit = 250,maxdepth=10)
 
+# Faz o Grafico
+# Deixou apenas as variaveis que s?o significativas no modelo
+rpart.plot(modelo_AD, type=2, extra="auto", under=FALSE, clip.right.labs=TRUE,
+           fallen.leaves=TRUE,   digits=2, varlen=-3, faclen=15,
+           cex=0.4, tweak=1.7,
+           compress=TRUE,box.palette="auto",
+           snip=FALSE)
+
+# Matriz de Confusao
+preds_prob <- predict(modelo_AD, white_wine_quality)
+preds_cat  <- predict(modelo_AD, type = "vector", white_wine_quality)
+table(preds_cat)
+ 
+# Predict como funcao para trazer a probabilidade do cliente ser Campanhaimplente(0/1)
+Vinho.previsto.com.modelo <- predict(modelo_AD, white_wine_quality)
+
+## Predict com tipo 'classe' retorna se eh Campanhaimplente ou nao
+Vinho.previsto.com.modelo <- predict(modelo_AD, white_wine_quality, type='vector')
+head(Vinho.previsto.com.modelo)
+
+# Tabela entre o Previsto e o Real
+Vinho.matriz.de.confusao <- table(quality, Vinho.previsto.com.modelo)
+Vinho.matriz.de.confusao
+
+diagonal <- diag(Vinho.matriz.de.confusao)
+
+# Acuracia
+perc.acerto <- sum(diagonal) / sum(Vinho.matriz.de.confusao)
+perc.acerto
+
+# O 1- eh para conseguir o percentaul de erro
+perc.erro <- 1 - sum(diagonal) / sum(Vinho.matriz.de.confusao)
+perc.erro
+
+#plotar regra do modelo preditivo
+fancyRpartPlot(modelo_AD, cex=0.70)
+fancyRpartPlot(modelo_AD, cex=0.70,  palettes=c("Greys", "Oranges"))
+```
+
+```{r Algoritmos_para_explicar_a_variavel_Quality Regressao Logistica}
+# Modelo 4: Regressão Logística
+modelo_log<- glm(quality ~ alcohol+pH, white_wine_quality, family = gaussian) #binomial(link=logit))
+summary(modelo_log)
+
+# fitted = Usado para o caso da Logistica
+predito_log <- fitted(modelo_log)
+
+# Probabilidade
+summary(predito_log)
+
+# Histograma - valor escalar
+hist(predito_log)
+
+### Matriz de confusao  
+# Corte no 50% (Acima de 50 ou abaixo de 50) 
+white_wine_quality$fx_predito <- cut(predito_log, breaks=c(3, 9), right=F)
+plot(white_wine_quality$fx_predito, quality)
+
+MC <- table(quality, white_wine_quality$fx_predito, deparse.level = 2) # montar a matriz de confus?o  
+show(MC) # mostra os resultados  
+
+ACC = sum(diag(MC)) / sum(MC) # calcula a acuracia  
+show(ACC) # mostra a acuracia  
+
+# Criar variavel faixa probabilidade
+fx_predito1 <- cut(predito, breaks=c(5,6,7), right=F)
+
+# Frequencia absoluta
+table(fx_predito1,quality)
+
+# Frequ?ncia relativa
+prop.table(table(fx_predito1, quality),2)
+
+plot(fx_predito1, quality)
 
 ```
 
 3. Comparação entre os modelos:
-Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/ técnica que vocês recomendariam
+Utilizando as métricas adequadas para comparação de modelos façam um resumo sobre a qualidade dos modelos e indiquem qual o modelo/técnica que vocês recomendariam
 
 ```{r Comparação_entre_os_modelos}
 # Resumo sobre a qualidade dos modelos
