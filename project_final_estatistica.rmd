@@ -6,6 +6,15 @@ subtitle: "CONCEITOS ESTATISCOS PARA IA"
 institute: "FIAP - Profa. ADELAIDE ALVES DE OLIVEIRA"
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      error = FALSE, 
+                      warning = FALSE, 
+                      fig.width = 12, 
+                      fig.height = 8)
+```
+
 ```{r packages}
 # Carregue aqui todos os pacotes utilizados 
 # na sua análise realizada neste arquivo fonte.
@@ -55,14 +64,7 @@ library(rattle)
 
 ```
 
-```{r global_options, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, 
-                      message = FALSE, 
-                      error = FALSE, 
-                      warning = FALSE, 
-                      fig.width = 12, 
-                      fig.height = 8)
-```
+
 
 
 #### Introdução
@@ -89,7 +91,7 @@ white_wine_quality <- read.csv2('data/winequality-white.csv')
 Utilizando a base de vinhos (documento anexado) e disponibilizada em aula o objetivo do trabalho é mensurar a variável “Quality” dos vinhos desta região de Portugal com as variáveis de características (composição) dos vinhos.
 
 Algumas etapas importantes:
-1.	Base
+1. Base
 Reconhecimento da Base: Um descritivo do tamanho da base, quantidade de variáveis, formatos, e alguns descritivos (“achados”) sobre a base/variáveis.
 
 ```{r Reconhecimento_da_Base_Vinho_Tinto_1}
@@ -226,6 +228,13 @@ validate_outlier <- function(coluna, limits){
   return (coluna < limits[1] | coluna > limits[2])
 }
 
+print_quantity_outlier <- function(dataframe, field_outlier, field){
+  dataframe %>% 
+    filter(dataframe[field_outlier] == 1) %>% 
+      summarise(n()) -> n
+  paste(labels_graphs_variables[field] , " é de ", n)
+}
+
 ```
 
 
@@ -345,7 +354,10 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 # Dataset de vinho
 attach(white_wine_quality)
 
-plot(free.sulfur.dioxide~total.sulfur.dioxide)
+plot(free.sulfur.dioxide~total.sulfur.dioxide,
+     xlab= labels_graphs_variables['free.sulfur.dioxide'],  
+     ylab = labels_graphs_variables['total.sulfur.dioxide'] )
+
 plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
 
 plot(free.sulfur.dioxide~total.sulfur.dioxide)
@@ -356,42 +368,44 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 
 - Detecção de Outliers - Vinho Tinto
 
-```{r Deteccao de outliers - Vinho Tinto}
+```{r Deteccao de outliers - Vinho Tinto, echo = FALSE, message = FALSE}
 # Detecção de outliers
 attach(red_wine_quality)
 
-filter(red_wine_quality, outl_fixed.acidity == 1)
-filter(red_wine_quality, outl_volatile.acidity == 1)
-filter(red_wine_quality, outl_citric.acid == 1)
-filter(red_wine_quality, outl_residual.sugar == 1)
-filter(red_wine_quality, outl_chlorides == 1)
-filter(red_wine_quality, outl_free.sulfur.dioxide == 1)
-filter(red_wine_quality, outl_total.sulfur.dioxide == 1)
-filter(red_wine_quality, outl_density == 1)
-filter(red_wine_quality, outl_pH == 1)
-filter(red_wine_quality, outl_sulphates == 1)
-filter(red_wine_quality, outl_alcohol == 1)
+print_quantity_outlier(red_wine_quality, 'outl_fixed.acidity',  'fixed.acidity')
+print_quantity_outlier(red_wine_quality, 'outl_volatile.acidity',  'volatile.acidity')
+print_quantity_outlier(red_wine_quality, 'outl_citric.acid',  'citric.acid')
+print_quantity_outlier(red_wine_quality, 'outl_residual.sugar',  'residual.sugar')
+print_quantity_outlier(red_wine_quality, 'outl_chlorides',  'chlorides')
+print_quantity_outlier(red_wine_quality, 'outl_free.sulfur.dioxide',  'free.sulfur.dioxide')
+print_quantity_outlier(red_wine_quality, 'outl_total.sulfur.dioxide',  'total.sulfur.dioxide')
+print_quantity_outlier(red_wine_quality, 'outl_density',  'density')
+print_quantity_outlier(red_wine_quality, 'outl_pH',  'pH')
+print_quantity_outlier(red_wine_quality, 'outl_sulphates',  'sulphates')
+print_quantity_outlier(red_wine_quality, 'outl_alcohol',  'alcohol')
 
 ```
 
 - Detecção de Outliers - Vinho Branco
 
-```{r Deteccao de outliers - Vinho Branco}
+Segue abaixo a quanntidade de outliers para cada item encontrado
+
+```{r Deteccao de outliers - Vinho Branco, echo = FALSE, message = FALSE}
+
 # Detecção de outliers
 attach(white_wine_quality)
 
-filter(white_wine_quality, outl_fixed.acidity == 1)
-filter(white_wine_quality, outl_volatile.acidity == 1)
-filter(white_wine_quality, outl_citric.acid == 1)
-filter(white_wine_quality, outl_residual.sugar == 1)
-filter(white_wine_quality, outl_chlorides == 1)
-filter(white_wine_quality, outl_free.sulfur.dioxide == 1)
-filter(white_wine_quality, outl_total.sulfur.dioxide == 1)
-filter(white_wine_quality, outl_density == 1)
-filter(white_wine_quality, outl_pH == 1)
-filter(white_wine_quality, outl_sulphates == 1)
-filter(white_wine_quality, outl_alcohol == 1)
-
+print_quantity_outlier(white_wine_quality, 'outl_fixed.acidity',  'fixed.acidity')
+print_quantity_outlier(white_wine_quality, 'outl_volatile.acidity',  'volatile.acidity')
+print_quantity_outlier(white_wine_quality, 'outl_citric.acid',  'citric.acid')
+print_quantity_outlier(white_wine_quality, 'outl_residual.sugar',  'residual.sugar')
+print_quantity_outlier(white_wine_quality, 'outl_chlorides',  'chlorides')
+print_quantity_outlier(white_wine_quality, 'outl_free.sulfur.dioxide',  'free.sulfur.dioxide')
+print_quantity_outlier(white_wine_quality, 'outl_total.sulfur.dioxide',  'total.sulfur.dioxide')
+print_quantity_outlier(white_wine_quality, 'outl_density',  'density')
+print_quantity_outlier(white_wine_quality, 'outl_pH',  'pH')
+print_quantity_outlier(white_wine_quality, 'outl_sulphates',  'sulphates')
+print_quantity_outlier(white_wine_quality, 'outl_alcohol',  'alcohol')
 ```
 Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
 	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
