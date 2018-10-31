@@ -360,6 +360,18 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 # Detecção de outliers
 attach(red_wine_quality)
 
+filter(red_wine_quality, outl_fixed.acidity == 1)
+filter(red_wine_quality, outl_volatile.acidity == 1)
+filter(red_wine_quality, outl_citric.acid == 1)
+filter(red_wine_quality, outl_residual.sugar == 1)
+filter(red_wine_quality, outl_chlorides == 1)
+filter(red_wine_quality, outl_free.sulfur.dioxide == 1)
+filter(red_wine_quality, outl_total.sulfur.dioxide == 1)
+filter(red_wine_quality, outl_density == 1)
+filter(red_wine_quality, outl_pH == 1)
+filter(red_wine_quality, outl_sulphates == 1)
+filter(red_wine_quality, outl_alcohol == 1)
+
 ```
 
 - Detecção de Outliers - Vinho Branco
@@ -367,6 +379,18 @@ attach(red_wine_quality)
 ```{r Deteccao de outliers - Vinho Branco}
 # Detecção de outliers
 attach(white_wine_quality)
+
+filter(white_wine_quality, outl_fixed.acidity == 1)
+filter(white_wine_quality, outl_volatile.acidity == 1)
+filter(white_wine_quality, outl_citric.acid == 1)
+filter(white_wine_quality, outl_residual.sugar == 1)
+filter(white_wine_quality, outl_chlorides == 1)
+filter(white_wine_quality, outl_free.sulfur.dioxide == 1)
+filter(white_wine_quality, outl_total.sulfur.dioxide == 1)
+filter(white_wine_quality, outl_density == 1)
+filter(white_wine_quality, outl_pH == 1)
+filter(white_wine_quality, outl_sulphates == 1)
+filter(white_wine_quality, outl_alcohol == 1)
 
 ```
 Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
