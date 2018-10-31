@@ -182,7 +182,7 @@ white_wine_quality <-
     )
 
 
-red_wine_quality['tipo.vinho'] <- 'vermelho'
+red_wine_quality['tipo.vinho'] <- 'tinto'
 white_wine_quality['tipo.vinho']<- 'branco'
 
 wine_quality <- merge(red_wine_quality, white_wine_quality, all = TRUE)
@@ -311,20 +311,20 @@ white_wine_quality <-
 # Dataset de vinho
 attach(wine_quality)
 
-boxplot(quality ~ tipo.vinho, main='quality')
+boxplot(quality ~ tipo.vinho, main=paste(labels_graphs_variables['quality']))
 
 par (mfrow=c(3,4))
-boxplot(fixed.acidity ~ tipo.vinho, main='fixedacidity',col=c('red','blue'))
-boxplot(volatile.acidity ~ tipo.vinho , main='volatileacidity',col=c('red','blue'))
-boxplot(citric.acid ~ tipo.vinho, main='citricacid',col=c('red','blue'))
-boxplot(residual.sugar ~ tipo.vinho, main='residualsugar',col=c('red','blue'))
-boxplot(chlorides ~ tipo.vinho, main='chlorides',col=c('red','blue'))
-boxplot(free.sulfur.dioxide ~ tipo.vinho, main='freesulfurdioxide' ,col=c('red','blue'))
-boxplot(total.sulfur.dioxide ~ tipo.vinho, main='totalsulfurdioxide',col=c('red','blue'))
-boxplot(density ~ tipo.vinho, main='density',col=c('red','blue'))
-boxplot(pH ~ tipo.vinho, main='pH',col=c('red','blue'))
-boxplot(sulphates ~ tipo.vinho, main='sulphates',col=c('red','blue'))
-boxplot(alcohol ~ tipo.vinho, main='alcohol',col=c('red','blue'))
+boxplot(fixed.acidity ~ tipo.vinho       , main = paste(labels_graphs_variables['fixed.acidity']), col=c('red','blue'))
+boxplot(volatile.acidity ~ tipo.vinho    , main = paste(labels_graphs_variables['volatile.acidity']),col=c('red','blue'))
+boxplot(citric.acid ~ tipo.vinho         , main = paste(labels_graphs_variables['citric.acid']),col=c('red','blue'))
+boxplot(residual.sugar ~ tipo.vinho      , main = paste(labels_graphs_variables['residual.sugar']),col=c('red','blue'))
+boxplot(chlorides ~ tipo.vinho           , main = paste(labels_graphs_variables['chlorides']),col=c('red','blue'))
+boxplot(free.sulfur.dioxide ~ tipo.vinho , main = paste(labels_graphs_variables['free.sulfur.dioxide']) ,col=c('red','blue'))
+boxplot(total.sulfur.dioxide ~ tipo.vinho, main = paste(labels_graphs_variables['total.sulfur.dioxide']),col=c('red','blue'))
+boxplot(density ~ tipo.vinho             , main = paste(labels_graphs_variables['density']),col=c('red','blue'))
+boxplot(pH ~ tipo.vinho                  , main = paste(labels_graphs_variables['pH']),col=c('red','blue'))
+boxplot(sulphates ~ tipo.vinho           , main = paste(labels_graphs_variables['sulphates']),col=c('red','blue'))
+boxplot(alcohol ~ tipo.vinho             , main = paste(labels_graphs_variables['alcohol']),col=c('red','blue'))
 
 par (mfrow=c(1,1))
 
@@ -339,10 +339,13 @@ attach(red_wine_quality)
 
 # Correlações entre elas (numéricas e gráficos)
 
-plot(free.sulfur.dioxide~total.sulfur.dioxide)
-plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
+# plot(free.sulfur.dioxide~total.sulfur.dioxide)
+# plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
 
-plot(free.sulfur.dioxide~total.sulfur.dioxide)
+plot(free.sulfur.dioxide~total.sulfur.dioxide,
+     xlab = paste(labels_graphs_variables['free.sulfur.dioxide']),
+     ylab = paste(labels_graphs_variables['total.sulfur.dioxide']))
+
 abline(v=mean(free.sulfur.dioxide), col="red")
 abline(h=mean(total.sulfur.dioxide), col="green")
 
@@ -354,13 +357,18 @@ abline(h=mean(total.sulfur.dioxide), col="green")
 # Dataset de vinho
 attach(white_wine_quality)
 
+# plot(free.sulfur.dioxide~total.sulfur.dioxide,
+#      xlab = paste(labels_graphs_variables['free.sulfur.dioxide']),
+#      ylab = paste(labels_graphs_variables['total.sulfur.dioxide']))
+# 
+# plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3,
+#      xlab = paste(labels_graphs_variables['free.sulfur.dioxide']),
+#      ylab = paste(labels_graphs_variables['total.sulfur.dioxide']))
+ 
 plot(free.sulfur.dioxide~total.sulfur.dioxide,
-     xlab= labels_graphs_variables['free.sulfur.dioxide'],  
-     ylab = labels_graphs_variables['total.sulfur.dioxide'] )
+     xlab = paste(labels_graphs_variables['free.sulfur.dioxide']),
+     ylab = paste(labels_graphs_variables['total.sulfur.dioxide']))
 
-plot(free.sulfur.dioxide~total.sulfur.dioxide, pch=1, lwd=3)
-
-plot(free.sulfur.dioxide~total.sulfur.dioxide)
 abline(v=mean(free.sulfur.dioxide), col="red")
 abline(h=mean(total.sulfur.dioxide), col="green")
 
@@ -407,29 +415,55 @@ print_quantity_outlier(white_wine_quality, 'outl_pH',  'pH')
 print_quantity_outlier(white_wine_quality, 'outl_sulphates',  'sulphates')
 print_quantity_outlier(white_wine_quality, 'outl_alcohol',  'alcohol')
 ```
-Avaliar se a análise será feita com os dois tipos de vinhos juntos ou se separaria por tipo para analisá-los. 
-	No fechamento desta etapa colocar qual a opção seguirá sobre os tipos de vinhos , sobre os outliers (caso tenha) e o uso de Componentes Principais
 
-```{r Avaliacao da Analise e Correlacao}
+Devido a alta quantidade de Outliers ocorrida na análise de *Vinhos Tintos*, iremos trabalhar na análise dos *Vinhos Brancos*. Não foi a intenção aqui de limparmos os dataset para nossa demonstração e conclusão. 
+
+Em um processo profissional (não educativo), os dados de Outliers deversão ser limpos das análises.
+
+**Análise beaseada em gráficos de Histograma**
+
+O histograma, também conhecido como distribuição de frequências, é a representação gráfica em colunas ou em barras (retângulos) de um conjunto de dados previamente tabulado e dividido em classes uniformes ou não uniformes. A base de cada retângulo representa uma classe. A altura de cada retângulo representa a quantidade ou a frequência absoluta com que o valor da classe ocorre no conjunto de dados para classes uniformes ou a densidade de frequência para classes não uniformes. Importante ferramenta da estatística, o histograma também é uma das chamadas sete ferramentas da qualidade.
+
+Quando o volume de dados aumenta indefinidamente dentro do conjunto de dados e o intervalo de classes tende a zero (o que torna os retângulos cada vez mais finos e altos), a distribuição de frequência torna–se uma distribuição de densidade de probabilidades. A construção de histogramas tem caráter preliminar em qualquer estudo e é um importante indicador da distribuição de dados. Os histogramas podem indicar se uma distribuição se aproxima de uma função normal, assim como também podem indicar a mistura de populações quando se apresentam bimodais.
+
+```{r Avaliacao da Analise por Histograma}
 
 attach(white_wine_quality)
 
 # Avaliacao da Analise
 par (mfrow=c(3,4))
 
-hist(fixed.acidity)
-hist(volatile.acidity)
-hist(citric.acid)
-hist(residual.sugar)
-hist(chlorides)
-hist(free.sulfur.dioxide)
-hist(total.sulfur.dioxide)
-hist(density)
-hist(pH)
-hist(sulphates)
-hist(alcohol)
-hist(quality)
+hist(fixed.acidity, xlab = paste(labels_graphs_variables['fixed.acidity']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['fixed.acidity']) )
+hist(volatile.acidity, xlab = paste(labels_graphs_variables['volatile.acidity']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['volatile.acidity']) )
+hist(citric.acid, xlab = paste(labels_graphs_variables['citric.acid']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['citric.acid']) )
+hist(residual.sugar, xlab = paste(labels_graphs_variables['residual.sugar']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['residual.sugar']) )
+hist(chlorides, xlab = paste(labels_graphs_variables['chlorides']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['chlorides']) )
+hist(free.sulfur.dioxide, xlab = paste(labels_graphs_variables['free.sulfur.dioxide']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['free.sulfur.dioxide']) )
+hist(total.sulfur.dioxide, xlab = paste(labels_graphs_variables['total.sulfur.dioxide']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['total.sulfur.dioxide']) )
+hist(density, xlab = paste(labels_graphs_variables['density']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['density']) )
+hist(pH, xlab = paste(labels_graphs_variables['pH']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['pH']) )
+hist(sulphates, xlab = paste(labels_graphs_variables['sulphates']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['sulphates']) )
+hist(alcohol, xlab = paste(labels_graphs_variables['alcohol']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['alcohol']) )
+hist(quality, xlab = paste(labels_graphs_variables['quality']), ylab = 'Frequência', 
+     main = paste('Histograma de ', labels_graphs_variables['quality']) )
+```
 
+**Análise beaseada por Correlação entre as variáveis**
+
+A correlação é qualquer relação dentro de uma ampla classe de relações estatísticas que envolva dependência entre duas variáveis. Embora seja comumente denotada como a medida de relação entre duas variáveis aleatórias, correlação não implica causalidade. Em termos técnicos, a correlação refere–se a qualquer um dos vários tipos específicos de relação entre os valores médios. Existem diferentes coeficientes de correlação para medir o grau de correlação. Um dos coeficientes de correlação mais conhecidos é o coeficiente de correlação de Pearson, obtido pela divisão da covariância de duas variáveis pelo produto dos seus desvios padrão e sensível a uma relação linear entre duas variáveis.
+
+```{r Avaliacao por Correlacao}
 par (mfrow=c(1,1))
 
 # Correlações entre elas (numéricas e gráficos)
@@ -619,7 +653,7 @@ table(fx_predito1,quality)
 # Frequ?ncia relativa
 prop.table(table(fx_predito1, quality),2)
 
-plot(fx_predito1, quality)
+plot(fx_predito1, quality, xlab="Predito", ylab="Qualidade")
 
 ```
 
